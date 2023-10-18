@@ -1,4 +1,5 @@
 import os
+import torch
 import torch.distributed as dist
 
 def init_process(
@@ -9,13 +10,14 @@ def init_process(
     ):
     backend = backend.lower()
 
-    if int(os.environ.get('RANK', -1)) != -1:
+    if int(os.environ.get('RANK', -1)) == -1:
         config = {
             'is_ddp' : False,
             'is_master' : True,
-            'seed_offset' : 0,
+            'rank' : 0,
             'world_size' : 0,
-            'device_name' : f"{device_type}:0" 
+            'seed_offset' : 0,
+            'device' : f"{device_type}:0" 
         }
     else:
         # Check if torch.distributed is available
@@ -31,12 +33,13 @@ def init_process(
         
         # Creating process configuration file
         config = {
+            'is_ddp' : True,
             'rank' : int(os.environ['RANK']),
             'local_rank' : int(os.environ['LOCAL_RANK']),
             'world_size' : int(os.environ['WORLD_SIZE']),
             'backend' : backend
         }
-        config['device_name'] = f"{device_type}:{config['local_rank']}"
+        config['device'] = f"{device_type}:{config['local_rank']}"
         config['is_master'] = config['rank'] == 0
         config['seed_offset'] = config['rank']
 
@@ -59,6 +62,6 @@ def init_process(
         )
 
         # Set device
-        #torch.cuda.device(config['device_name])
+        torch.cuda.set_device(config['device'])
  
     return config
