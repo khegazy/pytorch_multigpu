@@ -45,6 +45,8 @@ if __name__ == "__main__":
             self.data_x, self.data_y = self.create_data(
                 self.n_features, n_samples
             )
+            print(f"######  Original Dataset (rank {self.rank})  #####"\
+                + "\nShape : " + str(self.data_x.shape) + "\n")
             self.n_total_samples = len(self.data_x)
             self.ddp_slice()
 
@@ -64,3 +66,6 @@ if __name__ == "__main__":
         rank=process_config["rank"],
         world_size=process_config["world_size"]
     )
+    print(f"######  Final Dataset (rank {process_config['rank']})  #####"\
+                + "\nLength: " + str(len(dataset))
+                + "\tShape: " + str(dataset.data_x.shape) + "\n")
