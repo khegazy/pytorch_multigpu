@@ -9,7 +9,6 @@ from ddp_modules.ddp_data_class import DatasetDDP
 
 if __name__ == "__main__":
 
-    #print(os.environ)
     # Variables
     n_features = 10
 
@@ -69,3 +68,6 @@ if __name__ == "__main__":
     print(f"######  Final Dataset (rank {process_config['rank']})  #####"\
                 + "\nLength: " + str(len(dataset))
                 + "\tShape: " + str(dataset.data_x.shape) + "\n")
+    
+    # Destroy process
+    ddp.end_process()
