@@ -65,3 +65,7 @@ def init_process(
         torch.cuda.set_device(config['device'])
  
     return config
+
+
+def end_process():
+    dist.destroy_process_group()
