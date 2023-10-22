@@ -15,7 +15,7 @@ def init_process(
             'is_ddp' : False,
             'is_master' : True,
             'rank' : 0,
-            'world_size' : 0,
+            'world_size' : 1,
             'seed_offset' : 0,
             'device' : f"{device_type}:0" 
         }
