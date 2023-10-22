@@ -16,3 +16,36 @@ class DatasetDDP():
         slice_indices = np.arange(self.rank, len(self.data_x), self.world_size)
         self.data_x = self.data_x[slice_indices]
         self.data_y = self.data_y[slice_indices]
+
+
+def get_dataloader(
+            dataset,
+            mode,
+            batch_size=32,
+            shuffle=True,
+            num_workers=0,
+            prefetch_factor=None,
+        ):
+    mode = mode.lower()
+    if mode not in ["train", "training", "eval", "evaluate"]:
+        raise ValueError("Dataloader mode must be 'train' or 'evalute'.")
+    
+    if mode in ["train", "training"]:
+        return torch.utils.data.DataLoader(
+            dataset,
+            drop_last=True,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            num_workers=num_workers,
+            prefetch_factor=prefetch_factor
+        )
+    else:  
+        return torch.utils.data.DataLoader(
+            dataset,
+            drop_last=False,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            num_workers=num_workers,
+            prefetch_factor=prefetch_factor
+        )
+
