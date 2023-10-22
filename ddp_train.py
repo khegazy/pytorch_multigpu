@@ -1,4 +1,5 @@
 import os
+import time
 import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -65,7 +66,7 @@ if __name__ == "__main__":
             return self.data_x[index], self.data_y[index]
     
     # Dataset
-    n_samples = 2*process_config["world_size"]*batch_size\
+    n_samples = 3*process_config["world_size"]*batch_size\
         + process_config["world_size"]//2 # Want uneven samples per process
     dataset = RandData(
         n_features,
@@ -111,8 +112,10 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
 
-
     # Destroy process
     ddp.end_process()
 
-    print(process_config['rank'])
+    print(
+        f"\n#####  Learned Weights (rank {process_config['rank']})  #####\n",
+        model.module.weight
+    )
