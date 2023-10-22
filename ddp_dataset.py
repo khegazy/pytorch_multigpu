@@ -19,13 +19,15 @@ if __name__ == "__main__":
 
     # Model
     model = torch.nn.Linear(n_features, n_features, True).to(process_config['device'])
+    model_device = model.weight.device    
     if process_config["is_ddp"]:
         model = DDP(model, device_ids=[process_config["local_rank"]])
+        model_device = model.device
     
     title = f"#####  Devices (rank {process_config['rank']}) #####"
     print(title + "\n" + f"N_gpus: {torch.cuda.device_count()}"\
         + f"\tInitialized GPU: {torch.cuda.current_device()}"\
-        + f"\tModel GPU: {model.device}" + "\n")
+        + f"\tModel GPU: {model_device}" + "\n")
 
     # Data
     class RandData(Dataset, DatasetDDP):
@@ -70,4 +72,5 @@ if __name__ == "__main__":
                 + "\tShape: " + str(dataset.data_x.shape) + "\n")
     
     # Destroy process
-    ddp.end_process()
+    if process_config['is_ddp']:
+        ddp.end_process()

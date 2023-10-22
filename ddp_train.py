@@ -21,13 +21,15 @@ if __name__ == "__main__":
 
     # Model
     model = torch.nn.Linear(n_features, n_features, True).to(process_config['device'])
+    model_device = model.weight.device
     if process_config["is_ddp"]:
         model = DDP(model, device_ids=[process_config["local_rank"]])
+        model_device = model.device
     
     title = f"#####  Devices (rank {process_config['rank']}) #####"
     print(title + "\n" + f"N_gpus: {torch.cuda.device_count()}"\
         + f"\tInitialized GPU: {torch.cuda.current_device()}"\
-        + f"\tModel GPU: {model.device}" + "\n")
+        + f"\tModel GPU: {model_device}" + "\n")
 
 
     ##################
@@ -91,7 +93,8 @@ if __name__ == "__main__":
     #####  Training  #####
     ######################
 
-    dist.barrier()
+    if process_config['is_ddp']:
+        dist.barrier()
     loss_fxn = torch.nn.MSELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     for epoch in range(1):
@@ -113,9 +116,15 @@ if __name__ == "__main__":
             optimizer.step()
 
     # Destroy process
-    ddp.end_process()
+    if process_config['is_ddp']:
+        ddp.end_process()
 
+
+    if process_config['is_ddp']:
+        weights = model.module.weight
+    else:
+        weights = model.weight
     print(
         f"\n#####  Learned Weights (rank {process_config['rank']})  #####\n",
-        model.module.weight
+        weights
     )
