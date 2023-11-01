@@ -38,7 +38,8 @@ if __name__ == "__main__":
     title = f"#####  Devices (rank {process_config['rank']}) #####"
     print(title + "\n" + f"N_gpus: {torch.cuda.device_count()}"\
         + f"\tInitialized GPU: {torch.cuda.current_device()}"\
-        + f"\tModel GPU: {model_device}" + "\n")
+        + f"\tModel GPU: {model_device}" + "\n"
+    )
 
 
     ##################
@@ -94,6 +95,7 @@ if __name__ == "__main__":
     eval_loader = ddpData.get_dataloader(
         dataset,
         "evaluate",
+        process_config,
         batch_size=batch_size,
         shuffle=True,
     )
@@ -128,7 +130,7 @@ if __name__ == "__main__":
         #output_rank=0, # Specifying the process rank calls dist.reduce to this process
         #rank=process_config['rank'], # Must specify the current process rank if output_rank
     )
-    
+
     # Destroy process
     if process_config['is_ddp']:
         ddp.end_process()

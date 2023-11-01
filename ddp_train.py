@@ -84,6 +84,7 @@ if __name__ == "__main__":
     train_loader = ddpData.get_dataloader(
         dataset,
         "train",
+        process_config,
         batch_size=batch_size,
         shuffle=True
     )
