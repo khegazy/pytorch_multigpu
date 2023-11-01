@@ -21,7 +21,8 @@ def init_process(
         }
     else:
         # Check if torch.distributed is available
-        assert dist.is_available()
+        if not dist.is_available():
+            raise RuntimeError("Requires distributed package to be available") 
         if backend == 'nccl':
             assert dist.is_nccl_available()
         elif backend == 'mpi':
