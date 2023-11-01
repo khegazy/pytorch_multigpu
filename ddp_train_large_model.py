@@ -5,8 +5,8 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import Dataset
 
-from ddp_modules import ddp
-import ddp_modules.ddp_data_class as ddpData
+from modules import ddp
+import modules.ddp_data as ddpData
 
 if __name__ == "__main__":
 
